@@ -1,0 +1,12 @@
+{
+    "name": "checkmk",
+    "version": "0.1.2",
+    "description": "",
+    "main": "checkMK.js",
+    "scripts": {
+	"test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Alfredo Roman Dominguez",
+    "license": "ISC",
+    "bundleDependencies": false
+}
