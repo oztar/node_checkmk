@@ -1,12 +1,25 @@
 {
-    "name": "checkmk",
-    "version": "0.1.2",
-    "description": "",
-    "main": "checkMK.js",
-    "scripts": {
-	"test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Alfredo Roman Dominguez",
-    "license": "ISC",
-    "bundleDependencies": false
+  "name": "checkmk",
+  "version": "0.1.3",
+  "description": "check_MK is a library to monitor your application internally from the server\r  monitoring checkmk server.",
+  "main": "checkMK.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alfredo Roman Dominguez",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oztar/node_checkmk.git"
+  },
+  "keywords": [
+    "checkmk",
+    "agent",
+    "check_mk",
+    "check_mk"
+  ],
+  "bugs": {
+    "url": "https://github.com/oztar/node_checkmk/issues"
+  },
+  "homepage": "https://github.com/oztar/node_checkmk#readme"
 }
