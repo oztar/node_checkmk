@@ -35,7 +35,7 @@ const lib = {
 /** Default vars */
 let _cmk = {
     start : Date.now()/1000,
-    version:  'Fredi-0.1',
+    version:  'Fredi-0.2',
     agent:  'Nodejs',
     host: '127.0.0.1',
     port: 6556,
@@ -148,9 +148,9 @@ function serviceTXT(name){
     }
 
     if( status == 2) txt=dats.critical;
-    if( status == 1) txt=dats.wraning;
+    if( status == 1) txt=dats.warning;
     
-    return status+' '+name+' '+counts+' '+txt;
+    return status+' '+name+' '+counts+' '+txt+' '+dats.addtxt;
 
 }
 /**
@@ -208,6 +208,7 @@ function addService(){
     settings.ok = settings.ok || _cmk.error.E_ADD_OK;
     settings.warning = settings.warning || _cmk.error.E_ADD_WAR;
     settings.critical = settings.critical || _cmk.error.E_ADD_CRI;
+    settings.addtxt = '';
 
     _cmk.local[name] = settings;
     if(! _cmk.services.includes(name)){
@@ -226,11 +227,12 @@ function addService(){
  * update Service  
  *
  * @descripton Update counter value
- * @param {string} name  - Name of service 
- * @param {json} counters
- * @json {string}: {int|string}  - Name counter : value counter
- * @json {string}: {string}  - Name counter : value counter
- * @json {string}: {int}  - Name counter : value counter...
+ * @param {string} name   - Name of service 
+ * @param {json} counters 
+ ** @json {string}: {int|string}  - Name counter : value counter
+ ** @json {string}: {string}      - Name counter : value counter
+ ** @json {string}: {int}         - Name counter : value counter...
+ * @param {string} txt    - text Info added [OK|Warning|CRITICAL]
 */
 function updateService(){
     if (!arguments.length) return _cmk.error.E_ADD_ARGUMENTS;
@@ -238,9 +240,12 @@ function updateService(){
     
     let name = arguments[0];
     let settings = arguments[1];
+    let newtxt = arguments[2] || '';
 
     if( _cmk.local[name] === undefined) return _cmk.error.E_UPD_SERVICE;
-    
+
+    _cmk.local[name].addtxt = newtxt;//add new text    
+
     for( let counterName in settings ){
 	if(_cmk.local[name].counter[counterName] === undefined) continue;
 	let t =  _cmk.local[name].counter[counterName].toString();

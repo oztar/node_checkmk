@@ -10,7 +10,7 @@ Using function "addService" you can create more services.
 
 Once the library is assembled, adding a new host in monitoring checkmk server.
 
-## Intall
+## Install
 
 ...
 npm install checkmk
@@ -23,7 +23,10 @@ npm install checkmk
 let check = require('checkMK');
 
 let options = {
-    host:  '10.10.1.20'    
+    host:  '10.10.1.20',
+    port: 6556,
+    encoding : 'utf8',
+    exclusive: true
 }
 
 check.createServer(options);
@@ -35,7 +38,8 @@ check.addService('test',{
     critical: ' Faltal error ',
     counter: {	
 	counter1 : '9;2;3;0;10',
-	counter2 : '1;2;7'
+	counter2 : '1;2;7',
+	othername : 1
     }
     
 })
@@ -43,6 +47,7 @@ check.addService('test',{
 ...
 check.updateService('test',{
 	counter1 : 1,
-	counter2 : 2
-    });
+	counter2 : 2,
+	othername : 0
+    },' value 1 for counter1 and 2 in counter 2 ( other 0)');
 ...
