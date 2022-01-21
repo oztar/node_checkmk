@@ -35,7 +35,7 @@ const lib = {
 /** Default vars */
 let _cmk = {
     start : Date.now()/1000,
-    version:  'Fredi-0.2',
+    version:  'Fredi-0.3.2',
     agent:  'Nodejs',
     host: '127.0.0.1',
     port: 6556,
@@ -64,8 +64,7 @@ if ( process.env.npm_package_version!== undefined){
 /** Base structure checkMK */
 const _check_mk = '<<<check_mk>>>'+"\n"+
       'Version: '+_cmk.version+"\n"+
-      'AgentOS: '+_cmk.agent+"\n"+
-      'Hostname:'+_cmk.host+"\n";
+      'AgentOS: '+_cmk.agent+"\n";
 
 
 /** Local services */
@@ -87,10 +86,10 @@ _cmk.local.Status = {
  * @json {string}  encoding - Type of encoding
 */
 function createServer(settings){
-    settings.host = settings.host || _cmk.host;
-    settings.port = settings.port || _cmk.port;
-    settings.exclusive =  settings.exclusive || _cmk.exclusive;
-    settings.encoding = settings.encoding || _cmk.encoding;
+     _cmk.host = settings.host || _cmk.host;
+     _cmk.port = settings.port || _cmk.port;
+     _cmk.exclusive =  settings.exclusive || _cmk.exclusive;
+     _cmk.encoding = settings.encoding || _cmk.encoding;
     
     let _other_settings = {};
     _other_settings.encoding = settings.encoding;
@@ -111,8 +110,16 @@ function createServer(settings){
 	for( let id in _cmk.local){
 	    local += serviceTXT(id)+"\n";
 	}
+
+	//memoru usage
+	const used = process.memoryUsage();
+	for (let key in used) {
+	    let mem = Math.round(used[key] / 1024 / 1024 * 100) / 100;
+	    local += 'P '+key+' '+key+'='+mem+' Memory '+key+' '+mem+'MB'+"\n";
+	}
 	
 	_socket.write(_check_mk);
+	_socket.write('Hostname:'+_cmk.host+"\n");
 	_socket.write(uptime);
 	_socket.write(local);
 	_socket.end();
@@ -134,53 +141,14 @@ function serviceTXT(name){
 	counts = '';
 	for( let idc in dats.counter ){
 	    counts +=idc+'='+dats.counter[idc]+'|';
-
-	    /** test  ok, warning citical */
-	    let t =  dats.counter[idc].toString();
-	    if ( t.search(';')>=0){
-		nstatus = check_multi(dats.counter[idc]);
-		if( nstatus > status){
-		    status=nstatus;
-		}
-	    }
 	}
 	counts = counts.substr(0,counts.length-1);
     }
 
-    if( status == 2) txt=dats.critical;
-    if( status == 1) txt=dats.warning;
-    
-    return status+' '+name+' '+counts+' '+txt+' '+dats.addtxt;
+    return 'P '+name+' '+counts+' '+txt+' '+dats.addtxt;
 
 }
-/**
- * @param {string} i - value;warn;crit;min;max
- * @return {int}  status - 0:ok 1:warning 2:critital
-*/
-function check_multi(i){
-    let n = i.split(';');
-    /*
-      [0] value
-      [1] warn
-      [2] crit
-      [3] min
-      [4] max
-    */
-    for( let x in n){
-	n[x] = parseInt(n[x]);
-    }
-    if( n[2] < n[1] ){
-	/* Invert 0 is negative */
-	if( n[0] > n[1]){return 0;}	
-	if( n[0] > n[2]){return 1;}
-	return 2;
-    }else{
-	/* normal 0 is positive */
-	if( n[0] > n[2] ){return 2;}
-	if( n[0] > n[1] ){ return 1;}
-	return 0;
-    }
-}
+
 /**
  * Add Service
  * 
@@ -244,6 +212,7 @@ function updateService(){
 
     if( _cmk.local[name] === undefined) return _cmk.error.E_UPD_SERVICE;
 
+    _cmk.local[name].addtxt = null; //trash recolector
     _cmk.local[name].addtxt = newtxt;//add new text    
 
     for( let counterName in settings ){
@@ -252,9 +221,11 @@ function updateService(){
 	if ( t.search(';')>=0){
 	    let n = t.split(';');
 	    n[0] = settings[counterName];
+	    _cmk.local[name].counter[counterName] = null; //trash recolector
 	    _cmk.local[name].counter[counterName] = n.join(';');
 	}else{
-	    _cmk.local[name].counter[counterName] =  settings[counterName];
+	    _cmk.local[name].counter[counterName] = null; //trash recolector
+	    _cmk.local[name].counter[counterName] = settings[counterName];
 	}
     }
 }

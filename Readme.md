@@ -7,6 +7,7 @@ By default the library generates two services:
 * status
 
 Using function "addService" you can create more services.
+see structure counter in checkmk official https://checkmk.com/cms_localchecks.html
 
 Once the library is assembled, adding a new host in monitoring checkmk server.
 
@@ -17,9 +18,7 @@ npm install checkmk
 ...
 
 
-## Usage
-
-
+## Usage example
 let check = require('checkMK');
 
 let options = {

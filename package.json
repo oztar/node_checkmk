@@ -1,6 +1,6 @@
 {
   "name": "checkmk",
-  "version": "0.2.4",
+  "version": "0.3.2",
   "description": "check_MK is a library to monitor your application internally from the server\r  monitoring checkmk server.",
   "main": "checkMK.js",
   "scripts": {
